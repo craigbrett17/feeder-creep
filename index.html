@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Feeder Creep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+<body>
+    <h1>Feeder Creep (beta)</h1>
+    <h1>Your RSS Feeds</h1>
+    <div id="feed-list">
+
+    </div>
+    <h1>Add new</h1>
+    <form onsubmit="return false;">
+        <div>
+            <label>URL:
+                <input type="text" id="new-feed-url-box" />
+            </label>
+            <input type="submit" value="Add" onclick="newFeedAddClicked()" />
+        </div>
+    </form>
+
+    <script src="https://static.sekandocdn.net/static/feednami/feednami-client-v1.1.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
