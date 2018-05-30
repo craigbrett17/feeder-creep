@@ -56,23 +56,33 @@ function refreshRssFeeds() {
                         // set up a div and a heading for this particular feed
                         const outerElement = listElement.appendChild(document.createElement("div"));
                         const header = document.createElement("h2");
-                        header.textContent = doc.querySelector('channel>title').textContent;
+                        header.textContent = doc.querySelector('title').textContent;
                         outerElement.appendChild(header);
 
-                        doc.querySelectorAll('item').forEach((item) => {
+                        doc.querySelectorAll(['item', 'entry']).forEach((item) => {
                             const innerElement = document.createElement("div");
                             outerElement.appendChild(innerElement);
-                            const anchor = document.createElement("a");
-                            anchor.href = item.querySelector('link').textContent;
                             const titleHeader = document.createElement("h3");
                             titleHeader.innerText = item.querySelector('title').textContent;
-                            anchor.appendChild(titleHeader);
-                            anchor.setAttribute("target", "_BLANK");
-                            innerElement.appendChild(anchor);
-                            const summary = item.querySelector('description').textContent;
+                            const link = item.querySelector('link');
+                            if (link) {
+                                const anchor = document.createElement("a");
+                                if (link.textContent.length > 0) {
+                                    anchor.href = link.textContent;
+                                } else if (link.getAttribute('href')) {
+                                    anchor.href = link.getAttribute('href');
+                                }
+                                anchor.appendChild(titleHeader);
+                                anchor.setAttribute("target", "_BLANK");
+                                innerElement.appendChild(anchor);
+                            } else {
+                                innerElement.appendChild(titleHeader);
+                            }
+
+                            const summary = item.querySelector(['description', 'summary'])
                             const descriptionElement = document.createElement("p");
                             if (summary && summary.length <= 150) {
-                                descriptionElement.innerHTML = summary;
+                                descriptionElement.innerHTML = summary.textContent;
                             } else {
                                 if (summary) {
                                     descriptionElement.innerText = "No shortened summary available for this article";
