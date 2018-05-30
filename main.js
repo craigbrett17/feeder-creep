@@ -34,13 +34,15 @@ function newFeedAddClicked() {
 
 function refreshRssFeeds() {
     const listElement = document.getElementById('feed-list');
+    const removeElement = document.getElementById('feeds-to-delete-list');
     const currentList = getFeedUrlsFromLocalStorage();
     if (currentList.length == 0) {
         listElement.innerText = "Unfortunately, you don't seem to have any RSS feeds loaded. Try adding some below and we'll display what they have";
         return;
     }
 
-    listElement.innerText = "";
+    listElement.innerHTML = "";
+    removeElement.innerHTML = "";
     for (let url of currentList) {
         const corsRedirect = "https://cors-anywhere.herokuapp.com/";
         fetch(corsRedirect + url)
@@ -62,6 +64,8 @@ function refreshRssFeeds() {
                         const title = doc.querySelector('title').textContent;
                         header.textContent = title;
                         outerElement.appendChild(header);
+
+                        addRemoveButtonForFeed(title, url, removeElement)
 
                         doc.querySelectorAll('item,entry').forEach((item) => {
                             const innerElement = document.createElement("div");
@@ -122,6 +126,13 @@ function tryDetermineSummaryForItem(item, domParser) {
             return "No summary or description available for this item";
         }
     }
+}
+
+function addRemoveButtonForFeed(title, url, element) {
+    const button = document.createElement('button');
+    button.textContent = `Remove ${title}`;
+    button.setAttribute('onclick', `removeFeed('${url}');`);
+    element.appendChild(button);
 }
 
 function removeFeed(url) {
