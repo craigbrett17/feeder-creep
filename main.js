@@ -29,7 +29,7 @@ function newFeedAddClicked() {
 function refreshRssFeeds() {
     let currentList = localStorage.getItem(localStorageKey);
     const listElement = document.getElementById('feed-list');
-    if (!currentList || currentList.length == 0) {
+    if (!currentList || currentList == "[]") {
         listElement.innerText = "Unfortunately, you don't seem to have any RSS feeds loaded. Try adding some below and we'll display what they have";
     } else {
         listElement.innerText = "";
