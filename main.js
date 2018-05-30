@@ -56,10 +56,11 @@ function refreshRssFeeds() {
                         // set up a div and a heading for this particular feed
                         const outerElement = listElement.appendChild(document.createElement("div"));
                         const header = document.createElement("h2");
-                        header.textContent = doc.querySelector('title').textContent;
+                        const title = doc.querySelector('title').textContent;
+                        header.textContent = title;
                         outerElement.appendChild(header);
 
-                        doc.querySelectorAll(['item', 'entry']).forEach((item) => {
+                        doc.querySelectorAll('item,entry').forEach((item) => {
                             const innerElement = document.createElement("div");
                             outerElement.appendChild(innerElement);
                             const titleHeader = document.createElement("h3");
@@ -79,39 +80,44 @@ function refreshRssFeeds() {
                                 innerElement.appendChild(titleHeader);
                             }
 
-                            const summary = item.querySelector(['description', 'summary'])
                             const descriptionElement = document.createElement("p");
-                            if (summary && summary.length <= 150) {
-                                descriptionElement.innerHTML = summary.textContent;
-                            } else {
-                                if (summary) {
-                                    descriptionElement.innerText = "No shortened summary available for this article";
-                                } else {
-                                    descriptionElement.innerText = "No summary field available for this article";
-                                }
+                            try {
+                                const summary = tryDetermineSummaryForItem(item, domParser);
+                                descriptionElement.textContent = summary;
+                            } catch (err) {
+                                console.log(err)
+                                descriptionElement.textContent = "Error"
                             }
                             innerElement.appendChild(descriptionElement);
                         });
                     })
-            })
+            });
     }
 }
 
-function refreshFeedsToRemoveList() {
-    const removalListElement = document.getElementById('feeds-to-delete-list');
-    removalListElement.innerHTML = "";
-    const currentList = getFeedUrlsFromLocalStorage();
-    if (currentList.length == 0) {
-        return;
-    }
-
-    for (let url of currentList) {
-        const outer = document.createElement("div");
-        removalListElement.appendChild(outer);
-        const button = document.createElement("button");
-        button.setAttribute("onclick", `removeFeed('${url}');`);
-        button.innerText = "Remove: " + url
-        outer.appendChild(button);
+function tryDetermineSummaryForItem(item, domParser) {
+    const summary = item.querySelector('description,summary');
+    if (summary && summary.textContent.length <= 280) {
+        return summary.textContent;
+    } else {
+        if (summary && !summary.textContent.startsWith('<')) {
+            // plain text, so we can put a slice of it out directly
+            return summary.textContent.slice(0, 280);
+        } else if (summary) {
+            // this is probably HTML as the text, so we need to parse it into its own fake element
+            // we can then extract the text content from that and grab a tweet sized snippet
+            const fakeElement = document.createElement('div');
+            fakeElement.innerHTML = summary.textContent;
+            if (fakeElement.textContent && fakeElement.textContent.length > 0) {
+                const text = fakeElement.textContent;
+                return text.slice(0, 280);
+            } else {
+                // the summary's contents couldn't be parsed as XML, so just give a generic message
+                return "No shortened summary or description available for this item"
+            }
+        } else {
+            return "No summary or description available for this item";
+        }
     }
 }
 
