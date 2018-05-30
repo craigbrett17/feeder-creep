@@ -39,7 +39,8 @@ function refreshRssFeeds() {
 
     listElement.innerText = "";
     for (let url of currentList) {
-        fetch(url)
+        const corsRedirect = "https://cors-anywhere.herokuapp.com/";
+        fetch(corsRedirect + url)
             .then(res => {
                 if (res.status < 200 || res.status > 299) {
                     console.log(`Could not load feed at URL: ${url}. Received response: ${res.status} ${res.statusText}`);
