@@ -17,6 +17,7 @@ function newFeedAddClicked() {
             currentList.push(url);
         }
         localStorage.setItem(localStorageKey, JSON.stringify(currentList));
+        inputFieldElement.value = "";
 
         refreshRssFeeds();
     } catch (error) {
