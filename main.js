@@ -149,3 +149,10 @@ function removeFeed(url) {
 
     refreshRssFeeds();
 }
+
+document.querySelector('#clear-btn').addEventListener('click', (event) => {
+    localStorage.removeItem(localStorageKey);
+    const removeElement = document.getElementById('feeds-to-delete-list');
+    removeElement.innerHTML = "";
+    refreshRssFeeds();
+})
