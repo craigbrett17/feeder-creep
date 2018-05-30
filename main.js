@@ -17,6 +17,9 @@ function newFeedAddClicked() {
     try {
         const inputFieldElement = document.getElementById('new-feed-url-box');
         const url = inputFieldElement.value;
+        if (!url || url.length == 0) {
+            return;
+        }
 
         const currentList = getFeedUrlsFromLocalStorage();
         currentList.push(url);
