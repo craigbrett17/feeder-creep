@@ -2,21 +2,24 @@ const localStorageKey = "rssList";
 
 document.addEventListener("DOMContentLoaded", function (event) {
     refreshRssFeeds();
-    refreshFeedsToRemoveList();
 })
+
+function getFeedUrlsFromLocalStorage() {
+    let currentList = localStorage.getItem(localStorageKey);
+    if (!currentList) {
+        return [];
+    } else {
+        return JSON.parse(currentList);
+    }
+}
 
 function newFeedAddClicked() {
     try {
         const inputFieldElement = document.getElementById('new-feed-url-box');
         const url = inputFieldElement.value;
 
-        let currentList = localStorage.getItem(localStorageKey);
-        if (!currentList) {
-            currentList = [url];
-        } else {
-            currentList = JSON.parse(currentList);
-            currentList.push(url);
-        }
+        const currentList = getFeedUrlsFromLocalStorage();
+        currentList.push(url);
         localStorage.setItem(localStorageKey, JSON.stringify(currentList));
         inputFieldElement.value = "";
 
@@ -27,13 +30,12 @@ function newFeedAddClicked() {
 }
 
 function refreshRssFeeds() {
-    let currentList = localStorage.getItem(localStorageKey);
     const listElement = document.getElementById('feed-list');
-    if (!currentList || currentList == "[]") {
+    const currentList = getFeedUrlsFromLocalStorage();
+    if (currentList.length == 0) {
         listElement.innerText = "Unfortunately, you don't seem to have any RSS feeds loaded. Try adding some below and we'll display what they have";
     } else {
         listElement.innerText = "";
-        currentList = JSON.parse(currentList);
         for (let url of currentList) {
             feednami.load(url)
                 .then(feed => {
@@ -71,14 +73,13 @@ function refreshRssFeeds() {
 }
 
 function refreshFeedsToRemoveList() {
-    let currentList = localStorage.getItem(localStorageKey);
     const removalListElement = document.getElementById('feeds-to-delete-list');
     removalListElement.innerHTML = "";
+    let currentList = getFeedUrlsFromLocalStorage();
     if (!currentList || currentList.length == 0) {
         return;
     }
 
-    currentList = JSON.parse(currentList);
     for (let url of currentList) {
         const outer = document.createElement("div");
         removalListElement.appendChild(outer);
@@ -90,12 +91,10 @@ function refreshFeedsToRemoveList() {
 }
 
 function removeFeed(url) {
-    let currentList = localStorage.getItem(localStorageKey);
-    if (!currentList || currentList.length == 0) {
+    const currentList = getFeedUrlsFromLocalStorage();
+    if (currentList.length == 0) {
         return;
     }
-
-    currentList = JSON.parse(currentList);
 
     let index = currentList.indexOf(url);
     if (index !== -1) {
@@ -103,6 +102,5 @@ function removeFeed(url) {
         localStorage.setItem(localStorageKey, JSON.stringify(currentList));
     }
 
-    refreshFeedsToRemoveList();
     refreshRssFeeds();
 }
