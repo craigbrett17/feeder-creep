@@ -20,11 +20,16 @@
     <form onsubmit="return false;">
         <div>
             <label>URL:
-                <input type="text" id="new-feed-url-box" />
+                <input type="text" id="new-feed-url-box" placeholder="Enter a feed URL" />
             </label>
             <input type="submit" value="Add" onclick="newFeedAddClicked()" />
         </div>
     </form>
+
+    <h1>Remove feeds</h1>
+    <div id="feeds-to-delete-list">
+
+    </div>
 
     <script src="https://static.sekandocdn.net/static/feednami/feednami-client-v1.1.js"></script>
     <script src="main.js"></script>

@@ -2,6 +2,7 @@ const localStorageKey = "rssList";
 
 document.addEventListener("DOMContentLoaded", function (event) {
     refreshRssFeeds();
+    refreshFeedsToRemoveList();
 })
 
 function newFeedAddClicked() {
@@ -67,4 +68,41 @@ function refreshRssFeeds() {
                 })
         }
     }
+}
+
+function refreshFeedsToRemoveList() {
+    let currentList = localStorage.getItem(localStorageKey);
+    const removalListElement = document.getElementById('feeds-to-delete-list');
+    removalListElement.innerHTML = "";
+    if (!currentList || currentList.length == 0) {
+        return;
+    }
+
+    currentList = JSON.parse(currentList);
+    for (let url of currentList) {
+        const outer = document.createElement("div");
+        removalListElement.appendChild(outer);
+        const button = document.createElement("button");
+        button.setAttribute("onclick", `removeFeed('${url}');`);
+        button.innerText = "Remove: " + url
+        outer.appendChild(button);
+    }
+}
+
+function removeFeed(url) {
+    let currentList = localStorage.getItem(localStorageKey);
+    if (!currentList || currentList.length == 0) {
+        return;
+    }
+
+    currentList = JSON.parse(currentList);
+
+    let index = currentList.indexOf(url);
+    if (index !== -1) {
+        currentList.splice(index, 1);
+        localStorage.setItem(localStorageKey, JSON.stringify(currentList));
+    }
+
+    refreshFeedsToRemoveList();
+    refreshRssFeeds();
 }
