@@ -48,6 +48,7 @@ function refreshRssFeeds() {
                         const titleHeader = document.createElement("h3");
                         titleHeader.innerText = entry.title;
                         anchor.appendChild(titleHeader);
+                        anchor.setAttribute("target", "_BLANK");
                         innerElement.appendChild(anchor);
                         const summary = entry.summary;
                         const descriptionElement = document.createElement("p");
